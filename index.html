@@ -190,7 +190,7 @@
         const auth = getAuth(app);
 
         let currentUserId = null;
-        let isAuthReady = false;
+        let isAuthReady = false; // Flag para indicar se o estado de autenticação inicial foi verificado
 
         // Elementos do DOM
         const loginPanel = document.getElementById('login-panel');
@@ -241,6 +241,7 @@
                 // deve ser feita no lado do servidor para maior confiabilidade e segurança.
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
+                console.log("IP do cliente obtido:", data.ip);
                 return data.ip;
             } catch (error) {
                 console.error("Erro ao obter o IP do cliente:", error);
@@ -255,7 +256,7 @@
             showLoading(true);
 
             const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim(); // A senha não será armazenada, apenas usada para uma validação simples
+            const password = passwordInput.value.trim(); // A senha não é usada para validação neste exemplo
 
             if (!username || !password) {
                 showMessage("Por favor, preencha o nome de usuário e a senha.");
@@ -270,46 +271,51 @@
             }
 
             try {
-                // Tentativa de autenticação com Firebase (pode ser anônima ou customizada)
-                // Para este exemplo, vamos usar um usuário anônimo e gerenciar o "login"
-                // com base no username e IP no Firestore.
                 let userCredential;
+                // Garante que temos um usuário Firebase autenticado para obter um UID
                 if (auth.currentUser) {
                     userCredential = { user: auth.currentUser };
+                    console.log("Já autenticado com UID:", userCredential.user.uid);
                 } else if (initialAuthToken) {
                     userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Autenticado com token customizado. UID:", userCredential.user.uid);
                 } else {
                     userCredential = await signInAnonymously(auth);
+                    console.log("Autenticado anonimamente. UID:", userCredential.user.uid);
                 }
 
-                currentUserId = userCredential.user.uid; // O UID do usuário Firebase
+                currentUserId = userCredential.user.uid;
 
-                const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/user_data`, username);
-                const userDocSnap = await getDoc(userDocRef);
+                // Usa um ID de documento fixo 'user_info' dentro da subcoleção 'profile' do usuário
+                const userProfileDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profile`, 'user_info');
+                const userProfileDocSnap = await getDoc(userProfileDocRef);
 
-                if (userDocSnap.exists()) {
-                    // Usuário existente
-                    const userData = userDocSnap.data();
+                if (userProfileDocSnap.exists()) {
+                    // Perfil de usuário existe, verifica nome de usuário e IP
+                    const userData = userProfileDocSnap.data();
+                    console.log("Dados de usuário existentes:", userData);
+
+                    // Verifica se o nome de usuário digitado corresponde ao nome de usuário armazenado para este UID
+                    if (userData.username !== username) {
+                        showMessage("Nome de usuário incorreto para este dispositivo. Por favor, use o nome de usuário registrado.");
+                        showLoading(false);
+                        return;
+                    }
+
                     if (userData.allowedIp === currentIp) {
-                        // IP corresponde, login bem-sucedido
                         showMessage("Login bem-sucedido!", 'success');
                         setTimeout(() => showDashboard(username, currentUserId), 1000);
                     } else {
-                        // IP não corresponde
                         showMessage(`Acesso negado: Este usuário só pode fazer login do IP ${userData.allowedIp}. Seu IP atual é ${currentIp}.`);
-                        // Opcional: deslogar o usuário anônimo se o IP não corresponder
-                        // await auth.signOut();
                     }
                 } else {
-                    // Primeiro login para este username
-                    // Para simplificar, estamos usando o username como ID do documento aqui.
-                    // Em um cenário real, você associaria o username a um UID do Firebase Auth.
-                    await setDoc(userDocRef, {
+                    // Primeiro login para este UID do Firebase, registra nome de usuário e IP
+                    await setDoc(userProfileDocRef, {
                         username: username,
                         allowedIp: currentIp,
                         createdAt: new Date().toISOString()
                     });
-                    showMessage("Primeiro login bem-sucedido! IP registrado.", 'success');
+                    showMessage("Primeiro login bem-sucedido! IP registrado para este usuário.", 'success');
                     setTimeout(() => showDashboard(username, currentUserId), 1000);
                 }
             } catch (error) {
@@ -322,16 +328,19 @@
 
         // Listener de estado de autenticação do Firebase
         onAuthStateChanged(auth, (user) => {
-            isAuthReady = true;
+            isAuthReady = true; // Indica que o estado de autenticação inicial foi verificado
             if (user) {
                 currentUserId = user.uid;
-                // Se o usuário já está autenticado (ex: por token inicial),
-                // podemos tentar carregar o dashboard se o username estiver disponível
-                // ou esperar pelo login manual para associar o username.
-                // Para este exemplo, o dashboard só é mostrado após o login manual via botão.
+                console.log("Estado de autenticação alterado: Usuário logado com UID:", currentUserId);
+                // Se o usuário está logado, mantemos o painel de login visível
+                // até que ele insira o username/password e clique em "Entrar"
+                // para que a verificação de IP ocorra.
+                loginPanel.style.display = 'block';
+                dashboardPanel.style.display = 'none';
             } else {
                 currentUserId = null;
-                // O usuário foi deslogado ou não está autenticado
+                console.log("Estado de autenticação alterado: Usuário deslogado.");
+                // Se não há usuário logado, mostra o painel de login
                 loginPanel.style.display = 'block';
                 dashboardPanel.style.display = 'none';
             }
@@ -365,7 +374,7 @@
         });
 
         option2.addEventListener('click', () => {
-            const colors = ['#f0f2f5', '#e0f2f7', '#f7e0f2', '#f2f7e0'];
+            const colors = ['#f0f2f5', '#e0f2f7', '#f7e0f2', '#f2f7e0', '#e0f7f2']; // Mais cores
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             document.body.style.backgroundColor = randomColor;
             showMessage(`Cor de fundo alterada para ${randomColor}!`, 'success');
@@ -417,12 +426,15 @@
             }
         });
 
-        // Oculta o painel de dashboard no carregamento inicial
+        // Oculta o painel de dashboard no carregamento inicial.
+        // O estado de exibição será gerenciado pelo onAuthStateChanged.
         window.onload = () => {
             dashboardPanel.style.display = 'none';
-            loginPanel.style.display = 'block'; // Garante que o painel de login esteja visível
+            // O loginPanel será exibido ou ocultado pelo onAuthStateChanged
+            // assim que o estado de autenticação for determinado.
         };
     </script>
 </body>
 </html>
 
+                                                                                                                  
