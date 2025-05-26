@@ -152,7 +152,7 @@
             // 'bruno' // Outro exemplo de usuário bloqueado
         ];
 
-        // --- NOVO PONTO DE ALTERAÇÃO: USUÁRIOS COM IP FIXO ---
+        // --- USUÁRIOS COM IP FIXO ---
         // Usuários nesta lista terão o IP capturado no primeiro login e subsequentemente restrito a ele.
         const USERS_TO_TRACK_IP = [
             'ana',    // Exemplo: O login da Ana só funcionará do primeiro IP dela.
@@ -165,6 +165,10 @@
                 // Usamos um serviço externo para obter o IP público.
                 // Note que este serviço pode ser limitado em requisições ou indisponível.
                 const response = await fetch('https://api.ipify.org?format=json');
+                if (!response.ok) { // Verifica se a requisição foi bem-sucedida
+                    console.error("Erro na requisição ao ipify.org:", response.statusText);
+                    return null;
+                }
                 const data = await response.json();
                 return data.ip;
             } catch (error) {
@@ -174,7 +178,7 @@
         }
 
         // Função para lidar com o login
-        loginButton.addEventListener('click', async () => { // Marcado como async
+        loginButton.addEventListener('click', async () => {
             const username = usernameInput.value;
             const password = passwordInput.value;
 
@@ -186,39 +190,46 @@
                 const isBlocked = BLOCKED_USERS.includes(username);
                 if (isBlocked) {
                     showMessage('Acesso negado. Este usuário está bloqueado.', 'error');
-                    return; // Interrompe o processo de login
+                    return;
                 }
 
                 // 3. Verifica o sistema de IP fixo
                 const shouldTrackIp = USERS_TO_TRACK_IP.includes(username);
+                console.log("Usuário a rastrear IP:", username, " - Deve rastrear IP?", shouldTrackIp); // DEBUG
                 if (shouldTrackIp) {
                     const currentIp = await getClientIp(); // Obtém o IP atual do cliente
+                    console.log("IP atual obtido:", currentIp); // DEBUG
+
                     if (!currentIp) {
                         showMessage('Não foi possível verificar seu IP. Tente novamente.', 'error');
                         return;
                     }
 
                     const storedIp = localStorage.getItem(`userIp_${username}`);
+                    console.log("IP armazenado (localStorage):", storedIp); // DEBUG
 
                     if (storedIp) {
                         // Se já tem IP armazenado, compara
+                        console.log("Comparando IPs:", storedIp, "vs", currentIp); // DEBUG
                         if (storedIp !== currentIp) {
                             showMessage('Acesso negado. Login permitido apenas do IP registrado para este usuário.', 'error');
-                            return; // Interrompe o processo de login
+                            return;
+                        } else {
+                            showMessage('IP verificado com sucesso. Login permitido.', 'success'); // DEBUG
                         }
                     } else {
                         // Se não tem IP armazenado, é o primeiro login deste IP. Armazena.
                         localStorage.setItem(`userIp_${username}`, currentIp);
+                        console.log(`IP (${currentIp}) registrado para ${username} no localStorage.`); // DEBUG
                         showMessage(`IP (${currentIp}) registrado para ${username}.`, 'success');
-                        // Continua para o login bem-sucedido
+                        // Não retorna, continua para o login bem-sucedido
                     }
                 }
 
                 // Se passou por todas as verificações, efetua o login
-                loginPanel.classList.add('hidden'); // Esconde o painel de login
-                dashboardPanel.classList.remove('hidden'); // Mostra o painel do dashboard
-                showMessage('Login realizado com sucesso!', 'success');
-
+                loginPanel.classList.add('hidden');
+                dashboardPanel.classList.remove('hidden');
+                // showMessage('Login realizado com sucesso!', 'success'); // Já mostrou mensagem no IP verificado
             } else {
                 showMessage('Usuário ou senha inválidos.', 'error');
             }
@@ -226,10 +237,10 @@
 
         // Função para lidar com o logout
         logoutButton.addEventListener('click', () => {
-            dashboardPanel.classList.add('hidden'); // Esconde o painel do dashboard
-            loginPanel.classList.remove('hidden'); // Mostra o painel de login
-            usernameInput.value = ''; // Limpa o campo de usuário
-            passwordInput.value = ''; // Limpa o campo de senha
+            dashboardPanel.classList.add('hidden');
+            loginPanel.classList.remove('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
             showMessage('Você saiu da sua conta.', 'success');
         });
 
