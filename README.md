@@ -1,2 +1,347 @@
-# Projeto-test
-Test 
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phantom Blue Panel - Status: Offline</title>
+    <!-- Carrega Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega Lucide Icons para os ícones da interface -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Configuração de fonte e cores para o tema Cyber/Neon */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+        :root {
+            --neon-blue: #00F0FF;
+            --dark-bg: #0D0E13;
+            --dark-card: #1C1D26;
+            --dark-border: #3A404D;
+            --input-focus: #00F0FF;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha ao topo para melhor visualização em mobile */
+            padding-top: 20px;
+        }
+
+        /* Estilos de Contêiner Principal */
+        .panel-container {
+            max-width: 420px; /* Largura ideal para simular tela de celular */
+            width: 95%;
+            background-color: var(--dark-card);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5); /* Efeito de brilho neon */
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Estilo para Inputs */
+        .neon-input {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--dark-border);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            transition: border-color 0.3s;
+        }
+        .neon-input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        /* Estilos de Toggles, Sliders e Botões (mantidos do código anterior) */
+        .toggle-switch input:checked + .slider {
+            background-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+        }
+
+        .toggle-switch input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: var(--dark-card);
+        }
+
+        .toggle-switch .slider {
+            background-color: var(--dark-border);
+            transition: .4s;
+        }
+
+        .toggle-switch .slider:before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--dark-border);
+            border-radius: 5px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+        }
+        .neon-button {
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            transition: all 0.3s;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+            background-color: rgba(0, 240, 255, 0.1);
+        }
+
+        .neon-button:hover {
+            background-color: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+        
+        /* Estilos específicos para o botão do YouTube */
+        .youtube-button {
+            border: 2px solid #FF0000; /* Borda Vermelha YouTube */
+            color: #FF0000;
+            background-color: rgba(255, 0, 0, 0.1);
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+        }
+        
+        .youtube-button:hover {
+            background-color: #FF0000;
+            color: white;
+            box-shadow: 0 0 20px #FF0000;
+        }
+
+        /* Estilos específicos para o novo botão do Jogo (Neon Verde) */
+        .game-button {
+            border: 2px solid #00FF00; /* Borda Verde Neon */
+            color: #00FF00;
+            background-color: rgba(0, 255, 0, 0.1);
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+        }
+        
+        .game-button:hover {
+            background-color: #00FF00;
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px #00FF00;
+        }
+        /* Fim dos estilos específicos */
+
+        .blinking-light {
+            width: 30px;
+            height: 30px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .log-entry {
+            border-left: 3px solid var(--neon-blue);
+            padding-left: 8px;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .log-entry.error {
+            border-left-color: #FF4444; /* Vermelho para erros */
+            color: #FF4444;
+        }
+
+        /* Estilo para a caixa de mensagem (substituindo o alert) */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--dark-card);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            max-width: 300px;
+            text-align: center;
+        }
+        .hidden-transition {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="panel-container">
+        
+        <!-- MESSAGE BOX (SUBSTITUIÇÃO DO ALERT) -->
+        <div id="messageBox" class="message-box hidden">
+            <p id="messageText" class="text-white text-sm mb-4"></p>
+            <button onclick="closeMessageBox()" class="neon-button px-4 py-1 text-sm rounded">FECHAR</button>
+        </div>
+
+        <!-- TELA DE LOGIN -->
+        <div id="loginScreen" class="p-6 transition-opacity duration-500">
+            <h1 class="text-3xl font-bold text-neon-blue tracking-widest uppercase text-center mb-6 border-b pb-2 border-neon-blue/30">
+                PHANTOM BLUE
+            </h1>
+            <p class="text-center text-sm text-gray-400 mb-8">
+                AUTENTICAÇÃO NECESSÁRIA - ACESSO VIP
+            </p>
+
+            <form id="loginForm" onsubmit="event.preventDefault(); attemptLogin()">
+                <div class="mb-4">
+                    <label for="username" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
+                        <i data-lucide="user" class="w-4 h-4 mr-2"></i> Usuário
+                    </label>
+                    <input type="text" id="username" class="neon-input w-full" placeholder="Insira seu ID de usuário" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
+                        <i data-lucide="lock" class="w-4 h-4 mr-2"></i> Chave de Acesso
+                    </label>
+                    <input type="password" id="password" class="neon-input w-full" placeholder="Insira sua chave VIP" required>
+                </div>
+                <button type="submit" class="neon-button w-full py-3 text-center rounded-lg font-bold">
+                    CONECTAR AO PAINEL
+                </button>
+            </form>
+
+            <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-8">
+                <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
+                Sistema de Acesso Restrito. Todos os direitos reservados @PhantomBlue.
+                <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
+            </div>
+        </div>
+
+        <!-- PAINEL PRINCIPAL (Inicialmente Escondido) -->
+        <div id="mainPanel" class="hidden-transition">
+            <!-- HEADER -->
+            <div class="p-4 flex justify-between items-center border-b-2 border-neon-blue/50">
+                <h1 class="text-xl font-bold text-neon-blue tracking-widest uppercase">
+                    PHANTOM BLUE
+                </h1>
+                <button onclick="logoutPanel()" class="bg-gray-700/50 hover:bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded transition duration-200">
+                    SAIR
+                </button>
+            </div>
+
+            <!-- TABS DE NAVEGAÇÃO -->
+            <div class="flex text-center text-sm md:text-base border-b-2 border-neon-blue/50">
+                <button id="tab-boneco" onclick="switchTab('boneco')" class="tab-button w-1/4 py-3 bg-neon-blue text-dark-bg font-bold transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="crosshair" class="w-5 h-5 mb-1"></i>
+                    BONECO
+                </button>
+                <button id="tab-recursos" onclick="switchTab('recursos')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="zap" class="w-5 h-5 mb-1"></i>
+                    RECURSOS
+                </button>
+                <button id="tab-anti-ban" onclick="switchTab('anti-ban')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="shield-half" class="w-5 h-5 mb-1"></i>
+                    ANTI-BAN
+                </button>
+                <button id="tab-injecao" onclick="switchTab('injecao')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="syringe" class="w-5 h-5 mb-1"></i>
+                    INJEÇÃO
+                </button>
+            </div>
+
+            <!-- CONTEÚDO DOS PAINÉIS -->
+            <div class="p-4 space-y-6">
+
+                <!-- 1. PAINEL BONECO -->
+                <div id="content-boneco" class="tab-content space-y-4">
+                    <h2 class="text-lg font-semibold text-neon-blue flex items-center">
+                        <i data-lucide="crosshair" class="w-5 h-5 mr-2"></i> SISTEMA DE BONECO
+                    </h2>
+                    <p class="text-xs text-gray-400">Configurações de mira e visualização</p>
+
+                    <!-- Toggles -->
+                    <div class="space-y-3">
+                        <div class="control-row" data-name="Aimbot">
+                            <span class="text-white">Aimbot</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" checked onchange="handleToggle(this, 'Aimbot')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
+                        </div>
+                        <div class="control-row" data-name="Headshot">
+                            <span class="text-white">Headshot</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" onchange="handleToggle(this, 'Headshot')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
+                        </div>
+                        <div class="control-row" data-name="Ignorar Derrubados">
+                            <span class="text-white">IGNORAR DERRUBADOS</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" onchange="handleToggle(this, 'Ignorar Derrubados')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="space-y-4 pt-2">
+                        <label class="block text-white">FOV DE MIRA: <span id="fovValue" class="text-neon-blue">10</span></label>
+                        <input type="range" min="1" max="180" value="10" class="w-full" oninput="updateSlider('fov', this.value)">
+
+                        <label class="block text-white">DISTÂNCIA: <span id="distanceValue" class="text-neon-blue">500m</span></label>
+                        <input type="range" min="10" max="1000" value="500" class="w-full" oninput="updateSlider('distance', this.value, 'm')">
+
+                        <label class="block text-white">SUAVIDADE: <span id="smoothnessValue" class="text-neon-blue">98%</span></label>
+                        <input type="range" min="1" max="100" value="98" class="w-full" oninput="updateSlider('smoothness', this.value, '%')">
+                    </div>
+
+                    <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
+                        <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
+                        Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
+                        <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- 2. PAINEL RECURSOS -->
+                <div id="content-recursos" class="tab-content hidden space-y-4">
+                    <h2 class="text-lg font-semibold text-neon-blue flex items-center">
+                        <i data-lucide="zap" class="w-5 h-5 mr-2"></i> RECURSOS DISPONÍVEIS
+                    </h2>
+                    <p class="text-xs text-gray-400">Configurações e funcionalidades extras</p>
+
+                    <!-- NOVO BOTÃO DE JOGO (DEEP LINK) -->
+                    <div class="pb-4 border-b border-dark-border">
+                        <button onclick="openMyGame()" class="neon-button game-button w-full py-3 text-center rounded-lg font-bold flex items-center justify-center">
+                            <i data-lucide="rocket" class="w-
