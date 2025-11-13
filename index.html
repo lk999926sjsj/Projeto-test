@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carrega Lucide Icons para os ícones da interface -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configuração de fonte e cores para o tema Cyber/Neon -->
     <style>
-        /* Configuração de fonte e cores para o tema Cyber/Neon */
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
         :root {
@@ -27,17 +27,17 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Alinha ao topo para melhor visualização em mobile */
-            padding-top: 20px;
+            align-items: flex-start;
+            padding: 20px;
         }
 
         /* Estilos de Contêiner Principal */
         .panel-container {
-            max-width: 420px; /* Largura ideal para simular tela de celular */
-            width: 95%;
+            max-width: 420px;
+            width: 100%;
             background-color: var(--dark-card);
             border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5); /* Efeito de brilho neon */
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
             border-radius: 16px;
             overflow: hidden;
             transition: all 0.5s ease-in-out;
@@ -57,33 +57,44 @@
             border-color: var(--input-focus);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
-        /* Estilos de Toggles, Sliders e Botões (mantidos do código anterior) */
+
+        /* Estilos de Toggles */
         .toggle-switch input:checked + .slider {
             background-color: var(--neon-blue);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
         }
-
         .toggle-switch input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(20px); /* Ajustado para 20px para caber em 12x7 */
             background-color: var(--dark-card);
         }
-
         .toggle-switch .slider {
             background-color: var(--dark-border);
             transition: .4s;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 9999px; /* rounded-full */
         }
-
         .toggle-switch .slider:before {
             content: "";
             position: absolute;
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
+            height: 18px; /* 7-4 = 3px de margem, logo 18px no h/w */
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
+        .toggle-switch {
+            width: 40px; /* Largura total */
+            height: 24px; /* Altura total (7) */
+        }
+        
+        /* Estilos de Slider */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -93,7 +104,6 @@
             margin: 10px 0;
             cursor: pointer;
         }
-
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -104,6 +114,8 @@
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
         }
+        
+        /* Estilos de Botão Neon */
         .neon-button {
             border: 2px solid var(--neon-blue);
             color: var(--neon-blue);
@@ -111,45 +123,38 @@
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
             background-color: rgba(0, 240, 255, 0.1);
         }
-
         .neon-button:hover {
             background-color: var(--neon-blue);
             color: var(--dark-bg);
             box-shadow: 0 0 20px var(--neon-blue);
         }
         
-        /* Estilos específicos para o botão do YouTube */
+        /* Botões Específicos */
         .youtube-button {
-            border: 2px solid #FF0000; /* Borda Vermelha YouTube */
+            border: 2px solid #FF0000;
             color: #FF0000;
             background-color: rgba(255, 0, 0, 0.1);
             text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
         }
-        
         .youtube-button:hover {
             background-color: #FF0000;
             color: white;
             box-shadow: 0 0 20px #FF0000;
         }
-
-        /* Estilos específicos para o novo botão do Jogo (Neon Verde) */
         .game-button {
-            border: 2px solid #00FF00; /* Borda Verde Neon */
+            border: 2px solid #00FF00;
             color: #00FF00;
             background-color: rgba(0, 255, 0, 0.1);
             text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
         }
-        
         .game-button:hover {
             background-color: #00FF00;
             color: var(--dark-bg);
             box-shadow: 0 0 20px #00FF00;
         }
-        /* Fim dos estilos específicos */
 
+        /* Indicador de Status */
         .blinking-light {
-            width: 30px;
-            height: 30px;
             background-color: var(--neon-blue);
             border-radius: 50%;
             box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
@@ -170,7 +175,7 @@
         }
 
         .log-entry.error {
-            border-left-color: #FF4444; /* Vermelho para erros */
+            border-left-color: #FF4444;
             color: #FF4444;
         }
 
@@ -195,11 +200,16 @@
             padding: 0;
             overflow: hidden;
             display: none;
+            transition: all 0.3s ease-in-out;
         }
         .control-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .tab-button.active {
+            background-color: var(--neon-blue);
+            color: var(--dark-bg);
         }
     </style>
 </head>
@@ -227,13 +237,15 @@
                     <label for="username" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
                         <i data-lucide="user" class="w-4 h-4 mr-2"></i> Usuário
                     </label>
-                    <input type="text" id="username" class="neon-input w-full" placeholder="Insira seu ID de usuário" required>
+                    <!-- CREDENCIAL DE EXEMPLO: 'vipuser' -->
+                    <input type="text" id="username" class="neon-input w-full" placeholder="Insira seu ID de usuário" value="vipuser" required>
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
                         <i data-lucide="lock" class="w-4 h-4 mr-2"></i> Chave de Acesso
                     </label>
-                    <input type="password" id="password" class="neon-input w-full" placeholder="Insira sua chave VIP" required>
+                    <!-- SENHA DE EXEMPLO: '123456' -->
+                    <input type="password" id="password" class="neon-input w-full" placeholder="Insira sua chave VIP" value="123456" required>
                 </div>
                 <button type="submit" class="neon-button w-full py-3 text-center rounded-lg font-bold">
                     CONECTAR AO PAINEL
@@ -261,7 +273,7 @@
 
             <!-- TABS DE NAVEGAÇÃO -->
             <div class="flex text-center text-sm md:text-base border-b-2 border-neon-blue/50">
-                <button id="tab-boneco" onclick="switchTab('boneco')" class="tab-button w-1/4 py-3 bg-neon-blue text-dark-bg font-bold transition-colors duration-300 flex flex-col items-center justify-center">
+                <button id="tab-boneco" onclick="switchTab('boneco')" class="tab-button w-1/4 py-3 bg-neon-blue text-dark-bg font-bold transition-colors duration-300 flex flex-col items-center justify-center active">
                     <i data-lucide="crosshair" class="w-5 h-5 mb-1"></i>
                     BONECO
                 </button>
@@ -291,25 +303,25 @@
 
                     <!-- Toggles -->
                     <div class="space-y-3">
-                        <div class="control-row" data-name="Aimbot">
+                        <div class="control-row" data-setting-id="aimbot">
                             <span class="text-white">Aimbot</span>
-                            <label class="toggle-switch relative inline-block w-12 h-7">
-                                <input type="checkbox" checked onchange="handleToggle(this, 'Aimbot')">
-                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" data-setting-key="aimbot" onchange="handleToggle(this, 'Aimbot')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
                             </label>
                         </div>
-                        <div class="control-row" data-name="Headshot">
+                        <div class="control-row" data-setting-id="headshot">
                             <span class="text-white">Headshot</span>
-                            <label class="toggle-switch relative inline-block w-12 h-7">
-                                <input type="checkbox" onchange="handleToggle(this, 'Headshot')">
-                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" data-setting-key="headshot" onchange="handleToggle(this, 'Headshot')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
                             </label>
                         </div>
-                        <div class="control-row" data-name="Ignorar Derrubados">
+                        <div class="control-row" data-setting-id="ignoreDowned">
                             <span class="text-white">IGNORAR DERRUBADOS</span>
-                            <label class="toggle-switch relative inline-block w-12 h-7">
-                                <input type="checkbox" onchange="handleToggle(this, 'Ignorar Derrubados')">
-                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" data-setting-key="ignoreDowned" onchange="handleToggle(this, 'Ignorar Derrubados')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
                             </label>
                         </div>
                     </div>
@@ -317,13 +329,13 @@
                     <!-- Sliders -->
                     <div class="space-y-4 pt-2">
                         <label class="block text-white">FOV DE MIRA: <span id="fovValue" class="text-neon-blue">10</span></label>
-                        <input type="range" min="1" max="180" value="10" class="w-full" oninput="updateSlider('fov', this.value)">
+                        <input type="range" min="1" max="180" value="10" data-setting-key="fov" class="w-full" oninput="updateSlider('fov', this.value)" onchange="saveSettings()">
 
                         <label class="block text-white">DISTÂNCIA: <span id="distanceValue" class="text-neon-blue">500m</span></label>
-                        <input type="range" min="10" max="1000" value="500" class="w-full" oninput="updateSlider('distance', this.value, 'm')">
+                        <input type="range" min="10" max="1000" value="500" data-setting-key="distance" class="w-full" oninput="updateSlider('distance', this.value, 'm')" onchange="saveSettings()">
 
                         <label class="block text-white">SUAVIDADE: <span id="smoothnessValue" class="text-neon-blue">98%</span></label>
-                        <input type="range" min="1" max="100" value="98" class="w-full" oninput="updateSlider('smoothness', this.value, '%')">
+                        <input type="range" min="1" max="100" value="98" data-setting-key="smoothness" class="w-full" oninput="updateSlider('smoothness', this.value, '%')" onchange="saveSettings()">
                     </div>
 
                     <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
@@ -343,4 +355,64 @@
                     <!-- NOVO BOTÃO DE JOGO (DEEP LINK) -->
                     <div class="pb-4 border-b border-dark-border">
                         <button onclick="openMyGame()" class="neon-button game-button w-full py-3 text-center rounded-lg font-bold flex items-center justify-center">
-                            <i data-lucide="rocket" class="w-
+                            <i data-lucide="rocket" class="w-5 h-5 mr-2"></i>
+                            INICIAR JOGO PREMIUM
+                        </button>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="space-y-4">
+                        <h3 class="text-md font-semibold text-gray-300">Ações Rápidas:</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="showMessageBox('Módulos Reiniciados', 'Todos os módulos foram reiniciados com sucesso. Prontos para a injeção.')" class="neon-button py-2 text-sm rounded-lg flex items-center justify-center">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 mr-1"></i>
+                                Reiniciar Módulos
+                            </button>
+                            <button onclick="openYouTube()" class="neon-button youtube-button py-2 text-sm rounded-lg flex items-center justify-center">
+                                <i data-lucide="youtube" class="w-4 h-4 mr-1"></i>
+                                Canal Oficial
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Exemplo de Status -->
+                    <div class="p-3 bg-dark-bg/70 border border-dark-border rounded-lg mt-4">
+                        <p class="text-sm font-semibold text-white mb-2">Status do Servidor:</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-400">Status Conexão:</span>
+                            <div class="flex items-center">
+                                <div id="connectionLight" class="w-3 h-3 bg-green-500 rounded-full mr-2 shadow-green"></div>
+                                <span id="connectionStatus" class="text-green-400 font-bold">ONLINE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. PAINEL ANTI-BAN -->
+                <div id="content-anti-ban" class="tab-content hidden space-y-4">
+                    <h2 class="text-lg font-semibold text-neon-blue flex items-center">
+                        <i data-lucide="shield-half" class="w-5 h-5 mr-2"></i> MÓDULOS DE SEGURANÇA
+                    </h2>
+                    <p class="text-xs text-gray-400">Configurações para discrição e prevenção de banimento</p>
+
+                    <div class="space-y-3">
+                        <div class="control-row" data-setting-id="spoofer">
+                            <span class="text-white">Spoofer de IP/HWID</span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" checked data-setting-key="spoofer" onchange="handleToggle(this, 'Spoofer IP')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
+                            </label>
+                        </div>
+                        <div class="control-row" data-setting-id="antiScreenshot">
+                            <span class="text-white">Bloqueio de Screenshot</span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" data-setting-key="antiScreenshot" onchange="handleToggle(this, 'Anti-Screenshot')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
+                            </label>
+                        </div>
+                        <div class="control-row" data-setting-id="cleanLogs">
+                            <span class="text-white">Limpeza Automática de Logs</span>
+                            <label class="toggle-switch relative inline-block">
+                                <input type="checkbox" checked data-setting-key="cleanLogs" onchange="handleToggle(this, 'Limpar Logs')">
+                                <span class="slider absolute cursor-pointer rounded-full"></span>
+                            </
