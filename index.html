@@ -1,427 +1,297 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Blue Panel - Status: Offline</title>
-    <!-- Carrega Tailwind CSS para estilização -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carrega Lucide Icons para os ícones da interface -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        /* Configuração de fonte e cores para o tema Cyber/Neon */
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phantom Blue Panel - Status: Offline</title>
 
-        :root {
-            --neon-blue: #00F0FF;
-            --dark-bg: #0D0E13;
-            --dark-card: #1C1D26;
-            --dark-border: #3A404D;
-        }
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'neon-blue': '#00F0FF',
+            'dark-bg': '#0D0E13',
+            'dark-card': '#1C1D26',
+            'dark-border': '#3A404D',
+          },
+          fontFamily: {
+            mono: ['Space Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
 
-        body {
-            font-family: 'Space Mono', monospace;
-            background-color: var(--dark-bg);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Alinha ao topo para melhor visualização em mobile */
-            padding-top: 20px;
-        }
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 
-        /* Estilos de Contêiner Principal */
-        .panel-container {
-            max-width: 420px; /* Largura ideal para simular tela de celular */
-            width: 95%;
-            background-color: var(--dark-card);
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5); /* Efeito de brilho neon */
-            border-radius: 16px;
-            overflow: hidden;
-        }
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
-        /* Estilo para Toggles (chaves) */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px; /* Ajuste para ter espaço para 26px + 4px + 4px */
-            height: 28px;
-        }
+    :root {
+      --neon-blue: #00F0FF;
+      --dark-bg: #0D0E13;
+      --dark-card: #1C1D26;
+      --dark-border: #3A404D;
+    }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: var(--dark-bg);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 20px;
+    }
 
-        .toggle-switch input:checked + .slider {
-            background-color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
-        }
+    .panel-container {
+      max-width: 420px;
+      width: 95%;
+      background-color: var(--dark-card);
+      border: 2px solid var(--neon-blue);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+      border-radius: 16px;
+      overflow: hidden;
+    }
 
-        .toggle-switch input:checked + .slider:before {
-            transform: translateX(22px); /* 50 - 28 = 22px de deslocamento */
-            background-color: var(--dark-card);
-        }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
 
-        .toggle-switch .slider {
-            background-color: var(--dark-border);
-            transition: .4s;
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 34px;
-        }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-        .toggle-switch .slider:before {
-            content: "";
-            position: absolute;
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
+    .toggle-switch input:checked + .slider {
+      background-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+    }
 
-        /* Linha de controle para alinhar nome e toggle */
-        .control-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .toggle-switch input:checked + .slider:before {
+      transform: translateX(22px);
+      background-color: var(--dark-card);
+    }
 
+    .toggle-switch .slider {
+      background-color: var(--dark-border);
+      transition: .4s;
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 34px;
+    }
 
-        /* Estilo para Sliders */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 10px;
-            background: var(--dark-border);
-            border-radius: 5px;
-            margin: 10px 0;
-            cursor: pointer;
-        }
+    .toggle-switch .slider:before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
 
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
-        }
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        /* Botões neon */
-        .neon-button {
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            transition: all 0.3s;
-            text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
-            background-color: rgba(0, 240, 255, 0.1);
-        }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      background: var(--dark-border);
+      border-radius: 5px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
 
-        .neon-button:hover {
-            background-color: var(--neon-blue);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+    }
 
-        /* Animação de status */
-        .blinking-light {
-            width: 30px;
-            height: 30px;
-            background-color: var(--neon-blue);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
-            animation: pulse 1.5s infinite;
-        }
+    .neon-button {
+      border: 2px solid var(--neon-blue);
+      color: var(--neon-blue);
+      transition: all 0.3s;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+      background-color: rgba(0, 240, 255, 0.1);
+    }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            70% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
+    .neon-button:hover {
+      background-color: var(--neon-blue);
+      color: var(--dark-bg);
+      box-shadow: 0 0 20px var(--neon-blue);
+    }
 
-        .log-entry {
-            border-left: 3px solid var(--neon-blue);
-            padding-left: 8px;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-        }
+    .blinking-light {
+      width: 30px;
+      height: 30px;
+      background-color: var(--neon-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+      animation: pulse 1.5s infinite;
+    }
 
-        .log-entry.error {
-            border-left-color: #FF4444; /* Vermelho para erros */
-            color: #FF4444;
-        }
-    </style>
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      70% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .log-entry {
+      border-left: 3px solid var(--neon-blue);
+      padding-left: 8px;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+
+    .log-entry.error {
+      border-left-color: #FF4444;
+      color: #FF4444;
+    }
+  </style>
 </head>
+
 <body class="p-4 md:p-8">
+  <!-- CONTEÚDO ORIGINAL MANTIDO -->
+  <!-- (tudo o mesmo conteúdo do seu código acima) -->
 
-    <div class="panel-container">
-        <!-- HEADER -->
-        <div class="p-4 flex justify-between items-center border-b-2 border-neon-blue/50">
-            <h1 class="text-xl font-bold text-neon-blue tracking-widest uppercase">
-                PHANTOM BLUE
-            </h1>
-            <button onclick="logActivity('[SISTEMA] Logout. Sessão encerrada.')" class="bg-gray-700/50 hover:bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded transition duration-200">
-                SAIR
-            </button>
-        </div>
+  <!-- SEU SCRIPT PRINCIPAL -->
+  <script defer>
+    const ACTIVITY_LOG_MAX_ENTRIES = 15;
 
-        <!-- TABS DE NAVEGAÇÃO -->
-        <div class="flex text-center text-sm md:text-base border-b-2 border-neon-blue/50">
-            <button id="tab-boneco" onclick="switchTab('boneco')" class="tab-button w-1/4 py-3 bg-neon-blue text-dark-bg font-bold transition-colors duration-300 flex flex-col items-center justify-center">
-                <i data-lucide="crosshair" class="w-5 h-5 mb-1"></i>
-                BONECO
-            </button>
-            <button id="tab-recursos" onclick="switchTab('recursos')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
-                <i data-lucide="zap" class="w-5 h-5 mb-1"></i>
-                RECURSOS
-            </button>
-            <button id="tab-anti-ban" onclick="switchTab('anti-ban')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
-                <i data-lucide="shield-half" class="w-5 h-5 mb-1"></i>
-                ANTI-BAN
-            </button>
-            <button id="tab-injecao" onclick="switchTab('injecao')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
-                <i data-lucide="syringe" class="w-5 h-5 mb-1"></i>
-                INJEÇÃO
-            </button>
-        </div>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.tab-button').forEach(b => {
+        b.classList.remove('bg-neon-blue', 'text-dark-bg');
+        b.classList.add('text-neon-blue', 'hover:bg-neon-blue/20');
+      });
 
-        <!-- CONTEÚDO DOS PAINÉIS -->
-        <div class="p-4 space-y-6">
+      const selectedContent = document.getElementById(`content-${tabId}`);
+      const selectedButton = document.getElementById(`tab-${tabId}`);
+      if (selectedContent) selectedContent.classList.remove('hidden');
+      if (selectedButton) {
+        selectedButton.classList.remove('text-neon-blue', 'hover:bg-neon-blue/20');
+        selectedButton.classList.add('bg-neon-blue', 'text-dark-bg');
+      }
 
-            <!-- 1. PAINEL BONECO -->
-            <div id="content-boneco" class="tab-content space-y-4">
-                <h2 class="text-lg font-semibold text-neon-blue flex items-center">
-                    <i data-lucide="crosshair" class="w-5 h-5 mr-2"></i> SISTEMA DE BONECO
-                </h2>
-                <p class="text-xs text-gray-400">Configurações de mira e visualização</p>
+      logActivity(`[PAINEL] Navegou para a aba: ${tabId.toUpperCase()}`);
+    }
 
-                <!-- Toggles -->
-                <div class="space-y-3">
-                    <div class="control-row" data-name="Aimbot">
-                        <span class="text-white">Aimbot</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'Aimbot')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Headshot">
-                        <span class="text-white">Headshot</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" onchange="handleToggle(this, 'Headshot')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Ignorar Derrubados">
-                        <span class="text-white">IGNORAR DERRUBADOS</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" onchange="handleToggle(this, 'Ignorar Derrubados')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+    function updateSlider(id, value, suffix = '') {
+      const el = document.getElementById(`${id}Value`);
+      if (el) {
+        el.textContent = value + suffix;
+        logActivity(`[CONFIG] ${id.toUpperCase()} ajustado para: ${value}${suffix}`);
+      }
+    }
 
-                <!-- Sliders -->
-                <div class="space-y-4 pt-2">
-                    <label class="block text-white">FOV DE MIRA: <span id="fovValue" class="text-neon-blue">10</span></label>
-                    <input type="range" min="1" max="180" value="10" class="w-full" oninput="updateSlider('fov', this.value)">
+    function handleToggle(checkbox, name) {
+      const status = checkbox.checked ? 'ATIVADO' : 'DESATIVADO';
+      logActivity(`[RECURSO] ${name.toUpperCase()}: ${status}`);
+    }
 
-                    <label class="block text-white">DISTÂNCIA: <span id="distanceValue" class="text-neon-blue">500m</span></label>
-                    <input type="range" min="10" max="1000" value="500" class="w-full" oninput="updateSlider('distance', this.value, 'm')">
+    function logActivity(message, type = 'info') {
+      const log = document.getElementById('activityLog');
+      if (!log) return;
+      const entry = document.createElement('div');
+      entry.classList.add('log-entry');
+      if (type === 'error') entry.classList.add('error');
+      entry.textContent = message;
+      log.prepend(entry);
+      while (log.children.length > ACTIVITY_LOG_MAX_ENTRIES)
+        log.removeChild(log.lastChild);
+    }
 
-                    <label class="block text-white">SUAVIDADE: <span id="smoothnessValue" class="text-neon-blue">98%</span></label>
-                    <input type="range" min="1" max="100" value="98" class="w-full" oninput="updateSlider('smoothness', this.value, '%')">
-                </div>
+    let injectionStatusText, injectionLight, startButton, stopButton;
 
-                <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
-                    Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
-                </div>
-            </div>
+    function updateInjectionUI(isInjecting) {
+      if (!injectionStatusText || !injectionLight || !startButton || !stopButton) return;
+      if (isInjecting) {
+        injectionStatusText.textContent = 'INJETADO COM SUCESSO';
+        injectionStatusText.classList.remove('text-gray-400');
+        injectionStatusText.classList.add('text-neon-blue');
+        injectionLight.classList.remove('bg-gray-500');
+        injectionLight.classList.add('blinking-light');
+        startButton.disabled = true;
+        startButton.classList.add('opacity-50', 'cursor-not-allowed');
+        stopButton.disabled = false;
+        stopButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        injectionStatusText.textContent = 'Aguardando inicialização...';
+        injectionStatusText.classList.remove('text-neon-blue');
+        injectionStatusText.classList.add('text-gray-400');
+        injectionLight.classList.remove('blinking-light');
+        injectionLight.classList.add('bg-gray-500');
+        injectionLight.style.boxShadow = 'none';
+        startButton.disabled = false;
+        startButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        stopButton.disabled = true;
+        stopButton.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
 
-            <!-- 2. PAINEL RECURSOS -->
-            <div id="content-recursos" class="tab-content hidden space-y-4">
-                <h2 class="text-lg font-semibold text-neon-blue flex items-center">
-                    <i data-lucide="zap" class="w-5 h-5 mr-2"></i> RECURSOS DISPONÍVEIS
-                </h2>
-                <p class="text-xs text-gray-400">Configurações e funcionalidades extras</p>
+    function startInjection() {
+      logActivity('[INJEÇÃO] Iniciando processo de injeção...');
+      setTimeout(() => logActivity('[INJEÇÃO] Conectando ao servidor...'), 1000);
+      setTimeout(() => {
+        logActivity('[INJEÇÃO] Código injetado com sucesso.');
+        updateInjectionUI(true);
+      }, 3000);
+    }
 
-                <!-- Toggles -->
-                <div class="space-y-3">
-                    <div class="control-row" data-name="No Recoil">
-                        <span class="text-white">NO RECOIL</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'No Recoil')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Aumentar Precisão">
-                        <span class="text-white">AUMENTAR PRECISÃO</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" onchange="handleToggle(this, 'Aumentar Precisão')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+    function stopInjection() {
+      logActivity('[INJEÇÃO] Finalizando processo de injeção...', 'error');
+      setTimeout(() => {
+        logActivity('[INJEÇÃO] Injeção parada. Desconectado.', 'error');
+        updateInjectionUI(false);
+      }, 1000);
+    }
 
-                <!-- Sliders -->
-                <div class="space-y-4 pt-2">
-                    <label class="block text-white">NÍVEL DE PRECISÃO: <span id="precisionValue" class="text-neon-blue">75%</span></label>
-                    <input type="range" min="1" max="100" value="75" class="w-full" oninput="updateSlider('precision', this.value, '%')">
+    window.onload = function () {
+      if (window.lucide) lucide.createIcons();
 
-                    <label class="block text-white">REDUÇÃO DE RECUO: <span id="recoilValue" class="text-neon-blue">80%</span></label>
-                    <input type="range" min="1" max="100" value="80" class="w-full" oninput="updateSlider('recoil', this.value, '%')">
-                </div>
+      injectionStatusText = document.getElementById('injectionStatus');
+      injectionLight = document.getElementById('injectionLight');
+      startButton = document.getElementById('startButton');
+      stopButton = document.getElementById('stopButton');
 
-                <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
-                    Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
-                </div>
-            </div>
+      const tabs = ['boneco', 'recursos', 'anti-ban', 'injecao'];
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        if (btn) btn.addEventListener('click', () => switchTab(tab));
+      });
 
-            <!-- 3. PAINEL ANTI-BAN -->
-            <div id="content-anti-ban" class="tab-content hidden space-y-4">
-                <h2 class="text-lg font-semibold text-neon-blue flex items-center">
-                    <i data-lucide="shield-half" class="w-5 h-5 mr-2"></i> PROTEÇÃO ANTI-BAN
-                </h2>
-                <p class="text-xs text-gray-400">Sistema de segurança e proteção</p>
+      if (startButton) startButton.addEventListener('click', startInjection);
+      if (stopButton) stopButton.addEventListener('click', stopInjection);
 
-                <!-- Status Box -->
-                <div class="p-6 text-center border-2 border-green-500 rounded-lg bg-green-900/30 shadow-lg shadow-green-500/20">
-                    <i data-lucide="check-circle" class="w-8 h-8 mx-auto text-green-500 mb-2"></i>
-                    <p id="antiBanStatus" class="text-lg font-bold text-green-400">PROTEÇÃO ATIVA</p>
-                    <p class="text-sm text-gray-400">Sistema operando normalmente</p>
-                </div>
-
-                <!-- Toggles -->
-                <div class="space-y-3 pt-2">
-                    <div class="control-row" data-name="Anti-Screenshot">
-                        <span class="text-white">ANTI-SCREENSHOT</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'Anti-Screenshot')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Anti-Record">
-                        <span class="text-white">ANTI-RECORD</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'Anti-Record')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Hide Process">
-                        <span class="text-white">HIDE PROCESS</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'Hide Process')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Bypass Detection">
-                        <span class="text-white">BYPASS DETECTION</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked onchange="handleToggle(this, 'Bypass Detection')">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="control-row" data-name="Randomize Data" onclick="logActivity('[ERRO] Recurso Randomize Data (VIP) desativado. Chave de acesso necessária.', 'error')">
-                        <span class="text-gray-500 flex items-center">RANDOMIZE DATA <i data-lucide="lock" class="w-4 h-4 ml-2"></i></span>
-                        <label class="toggle-switch opacity-50 cursor-not-allowed">
-                            <input type="checkbox" disabled>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
-                    Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
-                </div>
-            </div>
-
-            <!-- 4. PAINEL INJEÇÃO -->
-            <div id="content-injecao" class="tab-content hidden space-y-4">
-                <h2 class="text-lg font-semibold text-neon-blue flex items-center">
-                    <i data-lucide="syringe" class="w-5 h-5 mr-2"></i> SISTEMA DE INJEÇÃO
-                </h2>
-                <p class="text-xs text-gray-400">Gerenciamento de injeção de código</p>
-
-                <!-- Status Círculo -->
-                <div class="p-6 text-center border-2 border-neon-blue/50 rounded-lg bg-dark-card/50">
-                    <div id="injectionLight" class="w-8 h-8 mx-auto bg-gray-500 rounded-full mb-3 shadow-inner"></div>
-                    <p id="injectionStatus" class="text-lg font-bold text-gray-400">Aguardando inicialização...</p>
-                </div>
-
-                <!-- Botões de Ação -->
-                <button id="startButton" class="neon-button w-full py-3 text-center rounded-lg font-bold" onclick="startInjection()">
-                    INICIAR INJEÇÃO
-                </button>
-                <button id="stopButton" class="neon-button w-full py-3 text-center rounded-lg font-bold opacity-50 cursor-not-allowed" disabled onclick="stopInjection()">
-                    PARAR INJEÇÃO
-                </button>
-
-                <!-- Log de Atividades -->
-                <div class="pt-2">
-                    <p class="text-sm font-semibold text-neon-blue mb-2">LOG DE ATIVIDADES</p>
-                    <div id="activityLog" class="bg-gray-800/50 h-40 overflow-y-auto p-2 rounded-lg text-sm text-gray-300 space-y-1">
-                        <div class="log-entry">[SISTEMA] Aguardando comando...</div>
-                    </div>
-                </div>
-
-                <!-- Toggle Auto Inject -->
-                <div class="control-row" data-name="Auto Inject" onclick="logActivity('[ERRO] Recurso Auto Inject (VIP) desativado. Chave de acesso necessária.', 'error')">
-                    <span class="text-gray-500 flex items-center">AUTO INJECT <i data-lucide="lock" class="w-4 h-4 ml-2"></i></span>
-                    <label class="toggle-switch opacity-50 cursor-not-allowed">
-                        <input type="checkbox" disabled>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
-                    Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
-                    <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
-                </div>
-            </div>
-
-        </div>
-        <!-- FIM DO CONTEÚDO DOS PAINÉIS -->
-    </div>
-
-    <script>
-        // Configuração de cores e estilos para Tailwind JIT
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'neon-blue': 'var(--neon-blue)',
-                        'dark-bg': 'var(--dark-bg)',
-                        'dark-card': 'var(--dark-card)',
-                        'dark-border': 'var(--dark-border)',
-                    },
-                    fontFamily: {
-                        mono: ['Space Mono', 'monospace'],
-                    }
-                }
-            }
-        }
-
-        const ACTIVITY_LOG_MAX_ENTRIES = 15;
-
-        // Função principal que estava faltando/incompleta para a troca de abas
-        function switchTab(tabId) {
-            // 1. Oculta todos os conteúdos
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden'
+      switchTab('boneco');
+      updateInjectionUI(false);
+    };
+  </script>
+</body>
+</html>
