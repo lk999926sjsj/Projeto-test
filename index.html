@@ -1,551 +1,346 @@
-(function() {
-    // Definindo os usuários e senhas permitidos
-    const allowedCredentials = [
-        { username: 'lkxz', password: '1234' },
-        { username: 'admin', password: 'senha1' },
-        { username: 'user01', password: 'pass01' },
-        { username: 'developer', password: 'devpwd' },
-        { username: 'test', password: 'teste1' }
-    ];
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phantom Blue Panel - Status: Offline</title>
+    <!-- Carrega Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega Lucide Icons para os ícones da interface -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Configuração de fonte e cores para o tema Cyber/Neon */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
-    // CSS para o painel de login
-    const loginStyle = document.createElement("style");
-    loginStyle.textContent = `
-        .khz-login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
+        :root {
+            --neon-blue: #00F0FF;
+            --dark-bg: #0D0E13;
+            --dark-card: #1C1D26;
+            --dark-border: #3A404D;
+            --input-focus: #00F0FF;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 9999999;
+            align-items: flex-start; /* Alinha ao topo para melhor visualização em mobile */
+            padding-top: 20px;
         }
-        .khz-login-panel {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 0 25px rgba(255, 192, 203, 0.8);
-            text-align: center;
-            color: #fff;
-            font-family: sans-serif;
-            width: 300px;
-            box-sizing: border-box;
-            border: 2px solid #FFC0CB;
+
+        /* Estilos de Contêiner Principal */
+        .panel-container {
+            max-width: 420px; /* Largura ideal para simular tela de celular */
+            width: 95%;
+            background-color: var(--dark-card);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5); /* Efeito de brilho neon */
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
         }
-        .khz-login-panel h2 {
-            color: #FFC0CB;
-            margin-bottom: 20px;
-            font-size: 24px;
+
+        /* Estilo para Inputs */
+        .neon-input {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--dark-border);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            transition: border-color 0.3s;
         }
-        .khz-login-panel input {
-            width: calc(100% - 20px);
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #FFC0CB;
-            border-radius: 6px;
-            background: #222;
-            color: #fff;
-            font-size: 16px;
-            box-sizing: border-box;
+        .neon-input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
-        .khz-login-panel input::placeholder {
-            color: #aaa;
+        /* Estilos de Toggles, Sliders e Botões (mantidos do código anterior) */
+        .toggle-switch input:checked + .slider {
+            background-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
         }
-        .khz-login-panel button {
-            background: #FFC0CB;
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background 0.3s ease, color 0.3s ease;
+
+        .toggle-switch input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: var(--dark-card);
+        }
+
+        .toggle-switch .slider {
+            background-color: var(--dark-border);
+            transition: .4s;
+        }
+
+        .toggle-switch .slider:before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
             width: 100%;
+            height: 10px;
+            background: var(--dark-border);
+            border-radius: 5px;
+            margin: 10px 0;
+            cursor: pointer;
         }
-        .khz-login-panel button:hover {
-            background: #fff;
-            color: #FFC0CB;
-        }
-        .khz-login-error {
-            color: #ff6b6b;
-            margin-top: 10px;
-            font-size: 14px;
-            min-height: 20px; /* Garante que o espaço esteja sempre lá */
-        }
-    `;
-    document.head.appendChild(loginStyle);
 
-    // Função para exibir o painel de login
-    function showLoginPanel() {
-        const loginOverlay = document.createElement("div");
-        loginOverlay.className = "khz-login-overlay";
-        loginOverlay.id = "khz-login-overlay";
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+        }
+        .neon-button {
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            transition: all 0.3s;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+            background-color: rgba(0, 240, 255, 0.1);
+        }
 
-        loginOverlay.innerHTML = `
-            <div class="khz-login-panel">
-                <h2>Login Necessário</h2>
-                <input type="text" id="khz-username" placeholder="Usuário" autocomplete="username">
-                <input type="password" id="khz-password" placeholder="Senha" autocomplete="current-password">
-                <p id="khz-login-error" class="khz-login-error"></p>
-                <button id="khz-login-button">Entrar</button>
+        .neon-button:hover {
+            background-color: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+        
+        /* Estilos específicos para o botão do YouTube */
+        .youtube-button {
+            border: 2px solid #FF0000; /* Borda Vermelha YouTube */
+            color: #FF0000;
+            background-color: rgba(255, 0, 0, 0.1);
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+        }
+        
+        .youtube-button:hover {
+            background-color: #FF0000;
+            color: white;
+            box-shadow: 0 0 20px #FF0000;
+        }
+
+        /* Estilos específicos para o novo botão do Jogo (Neon Verde) */
+        .game-button {
+            border: 2px solid #00FF00; /* Borda Verde Neon */
+            color: #00FF00;
+            background-color: rgba(0, 255, 0, 0.1);
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+        }
+        
+        .game-button:hover {
+            background-color: #00FF00;
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px #00FF00;
+        }
+        /* Fim dos estilos específicos */
+
+        .blinking-light {
+            width: 30px;
+            height: 30px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .log-entry {
+            border-left: 3px solid var(--neon-blue);
+            padding-left: 8px;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .log-entry.error {
+            border-left-color: #FF4444; /* Vermelho para erros */
+            color: #FF4444;
+        }
+
+        /* Estilo para a caixa de mensagem (substituindo o alert) */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--dark-card);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            max-width: 300px;
+            text-align: center;
+        }
+        .hidden-transition {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="panel-container">
+        
+        <!-- MESSAGE BOX (SUBSTITUIÇÃO DO ALERT) -->
+        <div id="messageBox" class="message-box hidden">
+            <p id="messageText" class="text-white text-sm mb-4"></p>
+            <button onclick="closeMessageBox()" class="neon-button px-4 py-1 text-sm rounded">FECHAR</button>
+        </div>
+
+        <!-- TELA DE LOGIN -->
+        <div id="loginScreen" class="p-6 transition-opacity duration-500">
+            <h1 class="text-3xl font-bold text-neon-blue tracking-widest uppercase text-center mb-6 border-b pb-2 border-neon-blue/30">
+                PHANTOM BLUE
+            </h1>
+            <p class="text-center text-sm text-gray-400 mb-8">
+                AUTENTICAÇÃO NECESSÁRIA - ACESSO VIP
+            </p>
+
+            <form id="loginForm" onsubmit="event.preventDefault(); attemptLogin()">
+                <div class="mb-4">
+                    <label for="username" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
+                        <i data-lucide="user" class="w-4 h-4 mr-2"></i> Usuário
+                    </label>
+                    <input type="text" id="username" class="neon-input w-full" placeholder="Insira seu ID de usuário" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-neon-blue text-sm font-bold mb-2 flex items-center">
+                        <i data-lucide="lock" class="w-4 h-4 mr-2"></i> Chave de Acesso
+                    </label>
+                    <input type="password" id="password" class="neon-input w-full" placeholder="Insira sua chave VIP" required>
+                </div>
+                <button type="submit" class="neon-button w-full py-3 text-center rounded-lg font-bold">
+                    CONECTAR AO PAINEL
+                </button>
+            </form>
+
+            <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-8">
+                <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
+                Sistema de Acesso Restrito. Todos os direitos reservados @PhantomBlue.
+                <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
             </div>
-        `;
-        document.body.appendChild(loginOverlay);
+        </div>
 
-        const usernameInput = document.getElementById("khz-username");
-        const passwordInput = document.getElementById("khz-password");
-        const loginButton = document.getElementById("khz-login-button");
-        const errorMessage = document.getElementById("khz-login-error");
+        <!-- PAINEL PRINCIPAL (Inicialmente Escondido) -->
+        <div id="mainPanel" class="hidden-transition">
+            <!-- HEADER -->
+            <div class="p-4 flex justify-between items-center border-b-2 border-neon-blue/50">
+                <h1 class="text-xl font-bold text-neon-blue tracking-widest uppercase">
+                    PHANTOM BLUE
+                </h1>
+                <button onclick="logoutPanel()" class="bg-gray-700/50 hover:bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded transition duration-200">
+                    SAIR
+                </button>
+            </div>
 
-        function attemptLogin() {
-            const enteredUsername = usernameInput.value;
-            const enteredPassword = passwordInput.value;
+            <!-- TABS DE NAVEGAÇÃO -->
+            <div class="flex text-center text-sm md:text-base border-b-2 border-neon-blue/50">
+                <button id="tab-boneco" onclick="switchTab('boneco')" class="tab-button w-1/4 py-3 bg-neon-blue text-dark-bg font-bold transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="crosshair" class="w-5 h-5 mb-1"></i>
+                    BONECO
+                </button>
+                <button id="tab-recursos" onclick="switchTab('recursos')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="zap" class="w-5 h-5 mb-1"></i>
+                    RECURSOS
+                </button>
+                <button id="tab-anti-ban" onclick="switchTab('anti-ban')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="shield-half" class="w-5 h-5 mb-1"></i>
+                    ANTI-BAN
+                </button>
+                <button id="tab-injecao" onclick="switchTab('injecao')" class="tab-button w-1/4 py-3 text-neon-blue hover:bg-neon-blue/20 transition-colors duration-300 flex flex-col items-center justify-center">
+                    <i data-lucide="syringe" class="w-5 h-5 mb-1"></i>
+                    INJEÇÃO
+                </button>
+            </div>
 
-            const isAuthenticated = allowedCredentials.some(cred =>
-                cred.username === enteredUsername && cred.password === enteredPassword
-            );
+            <!-- CONTEÚDO DOS PAINÉIS -->
+            <div class="p-4 space-y-6">
 
-            if (isAuthenticated) {
-                loginOverlay.remove();
-                // Se o login for bem-sucedido, executa o script original
-                executeOriginalScript();
-            } else {
-                errorMessage.textContent = "Usuário ou senha incorretos. Tente novamente.";
-            }
-        }
+                <!-- 1. PAINEL BONECO -->
+                <div id="content-boneco" class="tab-content space-y-4">
+                    <h2 class="text-lg font-semibold text-neon-blue flex items-center">
+                        <i data-lucide="crosshair" class="w-5 h-5 mr-2"></i> SISTEMA DE BONECO
+                    </h2>
+                    <p class="text-xs text-gray-400">Configurações de mira e visualização</p>
 
-        loginButton.addEventListener("click", attemptLogin);
-
-        // Permite login ao pressionar Enter nos campos de input
-        usernameInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                attemptLogin();
-            }
-        });
-        passwordInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                attemptLogin();
-            }
-        });
-    }
-
-    // A função que contém TODO o seu script original
-    function executeOriginalScript() {
-        // --- SEU CÓDIGO ORIGINAL COMEÇA AQUI ---
-
-        if (document.getElementById("khz-panel")) return;
-
-        const features = {
-            questionSpoof: false,
-            videoSpoof: false,
-            revealAnswers: false,
-            autoAnswer: false,
-            darkMode: true,
-            rgbLogo: false,
-            oneko: false
-        };
-
-        const config = {
-            autoAnswerDelay: 1.5
-        };
-
-        function sendToast(message, duration = 4000) {
-            const toast = document.createElement("div");
-            toast.className = "khz-toast";
-            toast.innerHTML = `
-                <div class="khz-toast-message">${message}</div>
-                <div class="khz-toast-progress"></div>
-            `;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add("hide");
-                setTimeout(() => toast.remove(), 500);
-            }, duration);
-        }
-
-        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        const style = document.createElement("style");
-        style.textContent = `
-            @keyframes fadeOut { 0% { opacity: 1 } 100% { opacity: 0 } }
-            .khz-splash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; justify-content: center; align-items: center; z-index: 999999; color: #FFC0CB; font-size: 42px; font-family: sans-serif; font-weight: bold; transition: opacity 1s ease; }
-            .khz-splash.fadeout { animation: fadeOut 1s ease forwards; }
-            .khz-toggle { position: fixed; bottom: 20px; left: 20px; width: 40px; height: 40px; background: #111; border: 2px solid #FFC0CB; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100000; color: #fff; font-size: 20px; font-weight: bold; box-shadow: 0 0 10px #FFC0CB; font-family: sans-serif; transition: 0.3s; }
-            .khz-toggle:hover { background: #FFC0CB; }
-            .khz-panel { position: fixed; top: 100px; left: 100px; width: 300px; background: rgba(0, 0, 0, 0.95); border-radius: 16px; padding: 20px; z-index: 99999; color: #fff; font-family: sans-serif; box-shadow: 0 0 20px rgba(255, 192, 203, 0.6); cursor: grab; display: none; }
-            .khz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-            .khz-title { font-weight: bold; font-size: 20px; color: #FFC0CB; }
-            .khz-button { display: block; width: 100%; margin: 10px 0; padding: 10px; background: #111; color: white; border: 2px solid #FFC0CB; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.3s; }
-            .khz-button:hover { background: #FFC0CB; border-color: #fff; }
-            .khz-button.active{background:#FFC0CB;border-color:#FFC0CB;box-shadow:0 0 8px #FFC0CB;}
-            .khz-input-group { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
-            .khz-input-group label { font-size: 12px; color: #ccc; }
-            .khz-input-group input { width: 60px; background: #222; color: #fff; border: 1px solid #FFC0CB; border-radius: 4px; padding: 4px; text-align: center; }
-            .khz-toast{position:fixed;bottom:20px;right:20px;background:#111;color:#fff;border:1px solid #FFC0CB;border-radius:8px;padding:12px 16px;margin-top:10px;box-shadow:0 0 10px #FFC0CB;font-size:14px;font-family:sans-serif;z-index:999999;animation:fadeIn 0.3s ease-out;overflow:hidden;width:fit-content;max-width:300px}.khz-toast.hide{animation:fadeOut 0.5s ease forwards}.khz-toast-progress{position:absolute;left:0;bottom:0;height:4px;background:#FFC0CB;animation:toastProgress linear forwards;animation-duration:4s;width:100%}.khz-toast-message{position:relative;z-index:1}@keyframes toastProgress{from{width:100%}to{width:0%}}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
-        `;
-        document.head.appendChild(style);
-
-        const originalParse = JSON.parse;
-        JSON.parse = function(text, reviver) {
-            let data = originalParse(text, reviver);
-            if (features.revealAnswers && data?.data) {
-                try {
-                    const dataValues = Object.values(data.data);
-                    for (const val of dataValues) {
-                        if (val?.item?.itemData) {
-                            let itemData = JSON.parse(val.item.itemData);
-                            if (itemData.question?.widgets) {
-                                for (const widget of Object.values(itemData.question.widgets)) {
-                                    widget.options?.choices?.forEach(choice => {
-                                        if (choice.correct) {
-                                            choice.content = "so no cz do carlos pablo e gustavo🫵🫦 " + choice.content;
-                                            sendToast("Sucesso.");
-
-                                        }
-                                    });
-                                }
-                            }
-                            val.item.itemData = JSON.stringify(itemData);
-                        }
-                    }
-                } catch (e) {}
-            }
-            return data;
-        };
-
-        const originalFetch = window.fetch;
-        window.fetch = async function(...args) {
-            let [input, init] = args;
-
-            if (features.videoSpoof) {
-                let requestBody, modifiedBody;
-                if (input instanceof Request) {
-                    requestBody = await input.clone().text().catch(() => null);
-                } else if (init?.body) {
-                    requestBody = init.body;
-                }
-
-                if (requestBody && requestBody.includes('"operationName":"updateUserVideoProgress"')) {
-                    try {
-                        let bodyObj = JSON.parse(requestBody);
-                        if (bodyObj.variables?.input) {
-                            const duration = bodyObj.variables.input.durationSeconds;
-                            bodyObj.variables.input.secondsWatched = duration;
-                            bodyObj.variables.input.lastSecondWatched = duration;
-                            modifiedBody = JSON.stringify(bodyObj);
-                        }
-                        if (modifiedBody) {
-                            if (input instanceof Request) {
-                                args[0] = new Request(input, { body: modifiedBody, ...init });
-                            } else {
-                                if (!args[1]) args[1] = {};
-                                args[1].body = modifiedBody;
-                            }
-                        }
-                    } catch (e) {}
-                }
-            }
-
-            const originalResponse = await originalFetch.apply(this, args);
-
-            if (features.questionSpoof && originalResponse.ok) {
-                const clonedResponse = originalResponse.clone();
-                try {
-                    let responseObj = await clonedResponse.json();
-                    if (responseObj?.data?.assessmentItem?.item?.itemData) {
-                        const phrases = ["by lkxz ", "by lkxz", "🌸", "manda a proxima."];
-                        let itemData = JSON.parse(responseObj.data.assessmentItem.item.itemData);
-
-                        itemData.question.content = phrases[Math.floor(Math.random() * phrases.length)] + `[[☃ radio 1]]`;
-                        itemData.question.widgets = { "radio 1": { type: "radio", options: { choices: [{ content: "👌", correct: true }, { content: "❌", correct: false }] } } };
-                        responseObj.data.assessmentItem.item.itemData = JSON.stringify(itemData);
-
-                        sendToast("Sucesso.");
-                        return new Response(JSON.stringify(responseObj), { status: 200, statusText: "OK", headers: originalResponse.headers });
-                    }
-                } catch (e) {}
-            }
-
-            return originalResponse;
-        };
-
-        (async function autoAnswerLoop() {
-            while (true) {
-                if (features.autoAnswer) {
-                    const click = (selector) => document.querySelector(selector)?.click();
-                    click('[data-testid="choice-icon__library-choice-icon"]');
-                    await delay(100);
-                    click('[data-testid="exercise-check-answer"]');
-                    await delay(100);
-                    click('[data-testid="exercise-next-question"]');
-                    await delay(100);
-                    click('._1udzurba');
-                    click('._awve9b');
-
-                    const summaryButton = document.querySelector('._1udzurba[data-test-id="end-of-unit-test-next-button"]');
-                    if (summaryButton?.innerText.toLowerCase().includes("resumo")) {
-                        sendToast("🎉 Exercício concluído!");
-                    }
-                }
-                await delay(config.autoAnswerDelay * 1000);
-            }
-        })();
-
-        // Função para alterar o nome de usuário visualmente
-        function changeUsernameDisplay() {
-            const newUsernameText = "feito by lkxz";
-            const commonUsernameSelectors = [
-                '#user-profile-name', // Exemplo comum para um ID
-                '.username-display',  // Exemplo comum para uma classe
-                'a[href*="/profile/"] strong', // Exemplo para link de perfil
-                'div.user-info span', // Outro exemplo genérico
-                // Adicione mais seletores específicos do site se você souber
-            ];
-
-            let changed = false;
-            for (const selector of commonUsernameSelectors) {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => {
-                    // Evita alterar elementos que não são nomes de usuário ou que já foram alterados
-                    if (el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== newUsernameText) {
-                        el.textContent = newUsernameText;
-                        changed = true;
-                    }
-                });
-            }
-            
-            // Tenta encontrar "Olá, [Nome]" e substituir
-            const greetingElements = document.querySelectorAll('span, div, a, p');
-            greetingElements.forEach(el => {
-                if (el.textContent && el.textContent.includes('Olá,')) {
-                    el.textContent = el.textContent.replace(/Olá,\s*[^!.\n\r]+/i, `Olá, ${newUsernameText}`);
-                    changed = true;
-                }
-            });
-
-            if (changed) {
-                sendToast("Nome de usuário alterado para '" + newUsernameText + "'!");
-            } else {
-                sendToast("Tentativa de mudar nome de usuário... Nenhum elemento encontrado.", 2000);
-            }
-        }
-
-
-        const splash = document.createElement("div");
-        splash.className = "khz-splash";
-        splash.textContent = "by lkxz.7";
-        document.body.appendChild(splash);
-
-        (async function initializeUI() {
-            const toastifyScript = document.createElement('script');
-            toastifyScript.src = 'https://cdn.jsdelivr.net/npm/toastify-js';
-            document.head.appendChild(toastifyScript);
-
-            const darkReaderScript = document.createElement('script');
-            darkReaderScript.src = 'https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js';
-            darkReaderScript.onload = () => {
-                DarkReader.setFetchMethod(window.fetch);
-                if (features.darkMode) {
-                    DarkReader.enable();
-                }
-                sendToast("Aprimorado por lkxz.7!");
-            };
-            document.head.appendChild(darkReaderScript);
-
-            function loadScript(src, id) {
-                return new Promise((resolve, reject) => {
-                    if (document.getElementById(id)) return resolve();
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.id = id;
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
-
-            setTimeout(() => {
-                splash.classList.add("fadeout");
-                setTimeout(() => {
-                    splash.remove();
-
-                    // Chama a função para mudar o nome de usuário assim que o splash some
-                    changeUsernameDisplay();
-
-                    const toggleBtn = document.createElement("div");
-                    toggleBtn.innerHTML = "≡";
-                    toggleBtn.className = "khz-toggle";
-                    toggleBtn.onclick = () => {
-                        const p = document.getElementById("khz-panel");
-                        p.style.display = p.style.display === "none" ? "block" : "none";
-                    };
-                    document.body.appendChild(toggleBtn);
-
-                    const panel = document.createElement("div");
-                    panel.id = "khz-panel";
-                    panel.className = "khz-panel";
-                    panel.innerHTML = `
-                        <div class="khz-header">
-                            <div class="khz-title">por lkxz.7</div>
-                            <div>script privado</div>
+                    <!-- Toggles -->
+                    <div class="space-y-3">
+                        <div class="control-row" data-name="Aimbot">
+                            <span class="text-white">Aimbot</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" checked onchange="handleToggle(this, 'Aimbot')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
                         </div>
-                        <button id="khz-btn-question" class="khz-button">Alterar Questões [DESLIGADO]</button>
-                        <button id="khz-btn-video" class="khz-button">Spoof de Vídeo [DESLIGADO]</button>
-                        <button id="khz-btn-reveal" class="khz-button">Revelar Respostas [DESLIGADO]</button>
-                        <button id="khz-btn-auto" class="khz-button">Resposta Automática [DESLIGADO]</button>
-                        <div class="khz-input-group">
-                            <label for="khz-input-speed">Velocidade (s):</label>
-                            <input type="number" id="khz-input-speed" value="${config.autoAnswerDelay}" step="0.1" min="0.2">
+                        <div class="control-row" data-name="Headshot">
+                            <span class="text-white">Headshot</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" onchange="handleToggle(this, 'Headshot')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
                         </div>
-                        <button id="khz-btn-dark" class="khz-button active">Modo Escuro [LIGADO]</button>
-                        <button id="khz-btn-rgb" class="khz-button">Logo RGB [DESLIGADO]</button>
-                        <button id="khz-btn-oneko" class="khz-button">OnekoJS [DESLIGADO]</button>
-                    `;
-                    document.body.appendChild(panel);
+                        <div class="control-row" data-name="Ignorar Derrubados">
+                            <span class="text-white">IGNORAR DERRUBADOS</span>
+                            <label class="toggle-switch relative inline-block w-12 h-7">
+                                <input type="checkbox" onchange="handleToggle(this, 'Ignorar Derrubados')">
+                                <span class="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full"></span>
+                            </label>
+                        </div>
+                    </div>
 
-                    const speedInput = document.getElementById('khz-input-speed');
-                    speedInput.addEventListener('input', () => {
-                        const newDelay = parseFloat(speedInput.value);
-                        if (newDelay >= 0.2) {
-                            config.autoAnswerDelay = newDelay;
-                        }
-                    });
+                    <!-- Sliders -->
+                    <div class="space-y-4 pt-2">
+                        <label class="block text-white">FOV DE MIRA: <span id="fovValue" class="text-neon-blue">10</span></label>
+                        <input type="range" min="1" max="180" value="10" class="w-full" oninput="updateSlider('fov', this.value)">
 
-                    const setupButton = (buttonId, featureName, buttonText) => {
-                        const button = document.getElementById(buttonId);
-                        button.addEventListener('click', () => {
-                            if (featureName === 'darkMode') {
-                                if (features.darkMode) {
-                                    DarkReader.disable();
-                                    features.darkMode = false;
-                                } else {
-                                    DarkReader.enable();
-                                    features.darkMode = true;
-                                }
-                            } else {
-                                features[featureName] = !features[featureName];
-                            }
+                        <label class="block text-white">DISTÂNCIA: <span id="distanceValue" class="text-neon-blue">500m</span></label>
+                        <input type="range" min="10" max="1000" value="500" class="w-full" oninput="updateSlider('distance', this.value, 'm')">
 
-                            const stateText = features[featureName] ? 'LIGADO' : 'DESLIGADO';
-                            button.textContent = `${buttonText} [${stateText}]`;
-                            button.classList.toggle('active', features[featureName]);
-                        });
-                    };
+                        <label class="block text-white">SUAVIDADE: <span id="smoothnessValue" class="text-neon-blue">98%</span></label>
+                        <input type="range" min="1" max="100" value="98" class="w-full" oninput="updateSlider('smoothness', this.value, '%')">
+                    </div>
 
-                    setupButton('khz-btn-question', 'questionSpoof', 'Alterar Questões');
-                    setupButton('khz-btn-video', 'videoSpoof', 'Spoof de Vídeo');
-                    setupButton('khz-btn-reveal', 'revealAnswers', 'Revelar Respostas');
-                    setupButton('khz-btn-auto', 'autoAnswer', 'Resposta Automática');
-                    setupButton('khz-btn-dark', 'darkMode', 'Modo Escuro');
-                    document.getElementById("khz-btn-rgb").addEventListener("click", toggleRgbLogo);
-                    features.oneko = false;
-                    document.getElementById("khz-btn-oneko").addEventListener("click", toggleOnekoJs);
+                    <div class="p-2 text-center text-xs border border-yellow-400/50 bg-yellow-900/30 rounded text-yellow-300 mt-4">
+                        <i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i>
+                        Auxílio de Mira Premium VIP. Todos os direitos reservados @PhantomBlue.
+                        <i data-lucide="alert-triangle" class="inline w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
 
-                    function toggleRgbLogo() {
-                        const khanLogo = document.querySelector('path[fill="#14bf96"]');
-                        const existingStyle = document.querySelector('style.RGBLogo');
+                <!-- 2. PAINEL RECURSOS -->
+                <div id="content-recursos" class="tab-content hidden space-y-4">
+                    <h2 class="text-lg font-semibold text-neon-blue flex items-center">
+                        <i data-lucide="zap" class="w-5 h-5 mr-2"></i> RECURSOS DISPONÍVEIS
+                    </h2>
+                    <p class="text-xs text-gray-400">Configurações e funcionalidades extras</p>
 
-                        if (!khanLogo) {
-                            sendToast("❌ Logo do Khan Academy não encontrado.");
-                            return;
-                        }
-
-                        if (features.rgbLogo) {
-                            if (existingStyle) existingStyle.remove();
-                            khanLogo.style.filter = '';
-                            features.rgbLogo = false;
-                            sendToast("🎨 Logo RGB desativado.");
-                        } else {
-                            const styleElement = document.createElement('style');
-                            styleElement.className = "RGBLogo";
-                            styleElement.textContent = `
-                                @keyframes hueShift {
-                                    0% { filter: hue-rotate(0deg); }
-                                    100% { filter: hue-rotate(360deg); }
-                                }
-                                .force-rgb-logo {
-                                    animation: hueShift 5s infinite linear !important;
-                                }
-                            `;
-                            document.head.appendChild(styleElement);
-
-                            khanLogo.classList.add("force-rgb-logo");
-                            features.rgbLogo = true;
-                            sendToast("🌈 Logo RGB ativado!");
-                        }
-
-                        const rgbBtn = document.getElementById("khz-btn-rgb");
-                        const stateText = features.rgbLogo ? "LIGADO" : "DESLIGADO";
-                        rgbBtn.textContent = `Logo RGB [${stateText}]`;
-                        rgbBtn.classList.toggle("active", features.rgbLogo);
-                    }
-
-                    function toggleOnekoJs() {
-                        const onekoBtn = document.getElementById("khz-btn-oneko");
-
-                        if (features.oneko) {
-                            const el = document.getElementById("oneko");
-                            if (el) el.remove();
-                            features.oneko = false;
-                            onekoBtn.textContent = "OnekoJS [DESLIGADO]";
-                            onekoBtn.classList.remove("active");
-                            sendToast("🐾 Oneko desativado.");
-                        } else {
-                            loadScript('https://cdn.jsdelivr.net/gh/adryd325/oneko.js/oneko.js', 'onekoJs').then(() => {
-                                if (typeof oneko === "function") {
-                                    oneko(); // <- inicia o gato!
-                                    setTimeout(() => {
-                                        const onekoEl = document.getElementById('oneko');
-                                        if (onekoEl) {
-                                            onekoEl.style.backgroundImage = "url('https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif')";
-                                            onekoEl.style.display = "block";
-                                            features.oneko = true;
-                                            onekoBtn.textContent = "OnekoJS [LIGADO]";
-                                            onekoBtn.classList.add("active");
-                                            sendToast("🐱 Oneko ativado!");
-                                        } else {
-                                            sendToast("⚠️ Oneko iniciou, mas não foi encontrado.");
-                                        }
-                                    }, 500);
-                                } else {
-                                    sendToast("❌ oneko() não está disponível.");
-                                }
-                            });
-                        }
-                    }
-
-                    let dragging = false, offsetX = 0, offsetY = 0;
-                    panel.addEventListener("mousedown", e => {
-                        if (e.target.closest("button") || e.target.closest("input")) return;
-                        dragging = true;
-                        offsetX = e.clientX - panel.offsetLeft;
-                        offsetY = e.clientY - panel.offsetTop;
-                        panel.style.cursor = "grabbing";
-                    });
-                    document.addEventListener("mousemove", e => {
-                        if (dragging) {
-                            panel.style.left = (e.clientX - offsetX) + "px";
-                            panel.style.top = (e.clientY - offsetY) + "px";
-                        }
-                    });
-                    document.addEventListener("mouseup", () => {
-                        dragging = false;
-                        panel.style.cursor = "grab";
-                    });
-
-                }, 1000);
-            }, 2000);
-        })();
-
-        // --- SEU CÓDIGO ORIGINAL TERMINA AQUI ---
-    }
-
-    // Chama a função para exibir o painel de login quando o script é carregado
-    showLoginPanel();
-
-})();
+                    <!-- NOVO BOTÃO DE JOGO (DEEP LINK) -->
+                    <div class="pb-4 border-b border-dark-border">
+                        <button onclick="openMyGame()" class="neon-button game-button w-full py-3 text-center rounded-lg font-bold flex items-center justify-center">
+                            <i data-lucide="rocket" class="w-
